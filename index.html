@@ -3,57 +3,287 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Directory - hoodedhacker32</title>
-    <!-- Primer CSS CDN -->
-    <link rel="stylesheet" href="https://unpkg.com/@primer/css@latest/dist/primer.css">
+    <title>hoodedhacker32 // Project Directory</title>
+    <!-- Fonts: JetBrains Mono for the 'system' feel, Inter for the 'content' feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
-        body { background-color: #f6f8fa; }
+        :root {
+            --bg-color: #0a0a0c;
+            --surface-color: #16161a;
+            --surface-hover: #1c1c22;
+            --accent-color: #5dfcf0; /* Electric Mint */
+            --accent-muted: rgba(93, 252, 240, 0.2);
+            --text-primary: #e6edf3;
+            --text-muted: #8b949e;
+            --border-color: #2d2d35;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-sans: 'Inter', sans-serif;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- Background Atmosphere --- */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% -20%, #1a1a2e 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* --- Header Section --- */
+        header {
+            padding: 4rem 2rem 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        .terminal-header {
+            font-family: var(--font-mono);
+            display: inline-block;
+            position: relative;
+        }
+
+        .prompt {
+            color: var(--accent-color);
+            font-weight: 700;
+            margin-right: 0.5rem;
+        }
+
+        .header-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .header-subtitle {
+            font-family: var(--font-mono);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* --- Main Content --- */
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem 5rem;
+        }
+
         .repo-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 1.5rem;
-            padding: 2rem 0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
         }
-        .repo-card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+        .repo-grid.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Project Cards (Bento-ish) --- */
+        .project-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            height: 100%;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
         }
-        .repo-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(140, 149, 159, 0.2);
+
+        .project-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+            transform: translateX(-100%);
+            transition: var(--transition);
+            opacity: 0;
         }
+
+        .project-card:hover {
+            background: var(--surface-hover);
+            border-color: var(--accent-color);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 15px var(--accent-muted);
+        }
+
+        .project-card:hover::before {
+            transform: translateX(100%);
+            opacity: 1;
+            transition: transform 0.6s ease;
+        }
+
+        .card-title {
+            font-family: var(--font-mono);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 0.75rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title::before {
+            content: "/";
+            color: var(--accent-color);
+            opacity: 0.6;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin: 0 0 2rem 0;
+            min-height: 3rem;
+        }
+
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+        }
+
+        .visit-link {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: var(--transition);
+        }
+
+        .visit-link:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+
+        /* --- Loading & Error States --- */
         .loading-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 60vh;
+            font-family: var(--font-mono);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-top: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-box {
+            background: rgba(255, 0, 0, 0.05);
+            border: 1px solid rgba(255, 0, 0, 0.2);
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 500px;
+            margin: 0 auto;
+            font-family: var(--font-mono);
+        }
+
+        .retry-btn {
+            background: transparent;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            margin-top: 1rem;
+            transition: var(--transition);
+        }
+
+        .retry-btn:hover {
+            background: var(--accent-color);
+            color: var(--bg-color);
+        }
+
+        @media (max-width: 600px) {
+            .header-title { font-size: 1.8rem; }
+            header { padding: 2rem 1rem 1rem; }
+            main { padding: 0 1rem 3rem; }
         }
     </style>
 </head>
-<body class="p-0 m-0">
+<body>
 
-    <!-- Header -->
-    <header class="header">
-        <div class="container-lg">
-            <div class="d-flex align-center py-2">
-                <svg height="32" viewBox="0 0 16 16" version="1.1" width="32" aria-hidden="true" class="mr-2">
-                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.95.10-1.61-.55-1.61-1.61 0-.44.13-.91.4-1.23-.56-.15-1.2-.54-1.2-2.38 0-1.34 1.04-2.45 2.3-2.45 .64 0 1.2.27 1.62.64.27.13.58.07 1.23.07.65 0 1.18.08 1.62.64.4.13.81.27 1.23.27 1.3 0 2.3-1.11 2.3-2.45 0-1.34-1.04-2.45-2.3-2.45-.64 0-1.2.27-1.62.64-.27.13-.58.07-1.23.07-.65 0-1.18-.08-1.62-.64-.4-.13-.81-.27-1.23-.27-1.3 0-2.3 1.11-2.3 2.45 0 1.34 1.04 2.45 2.3 2.45.64 0 1.2-.27 1.62.64.27-.13.58-.07 1.23.07.65 0 1.18.08 1.62.64.4.13.81.27 1.23.27 1.3 0 2.3-1.11 2.3-2.45 0-1.34-1.04-2.45-2.3-2.45z"></path>
-                </svg>
-                <h1 class="h3-text">hoodedhacker32 Project Directory</h1>
+    <header>
+        <div class="terminal-header">
+            <h1 class="header-title"><span class="prompt">$</span> hoodedhacker32</h1>
+            <div class="header-subtitle">
+                <span class="status-dot"></span>
+                <span>root@directory:~/active_projects</span>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="container-lg">
+    <main>
         <div id="status-area">
             <div class="loading-container">
-                <div class="fg-muted">Fetching active sites...</div>
-                <div class="spinner-lg mt-2"></div>
+                <div class="fg-muted" style="color: var(--text-muted); font-family: var(--font-mono);">Scanning for active deployments...</div>
+                <div class="spinner"></div>
             </div>
         </div>
         <div id="repo-grid" class="repo-grid" style="display: none;">
@@ -71,15 +301,12 @@
             const statusArea = document.getElementById('status-area');
 
             try {
-                // 1. Fetch all public repositories
                 const reposResponse = await fetch(`${API_BASE}/users/${USERNAME}/repos?per_page=100`);
                 if (!reposResponse.ok) throw new Error('Failed to fetch repositories');
                 const repos = await reposResponse.json();
 
-                // 2. Filter out the root directory repo to avoid self-referencing
                 const filteredRepos = repos.filter(repo => repo.name !== `${USERNAME}.github.io`);
 
-                // 3. Verify GitHub Pages status for each repo concurrently
                 const validationPromises = filteredRepos.map(async (repo) => {
                     try {
                         const detailResponse = await fetch(`${API_BASE}/repos/${USERNAME}/${repo.name}`);
@@ -95,25 +322,27 @@
                 const activeSites = results.filter(repo => repo !== null);
 
                 if (activeSites.length === 0) {
-                    statusArea.innerHTML = '<div class="text-center py-5">No active project sites found.</div>';
+                    statusArea.innerHTML = '<div class="text-center py-5" style="color: var(--text-muted); font-family: var(--font-mono);">No active project sites found.</div>';
                     return;
                 }
 
-                // 4. Render Cards
-                activeSites.forEach(repo => {
-                    const card = document.createElement('div');
-                    card.className = 'Box repo-card';
+                activeSites.forEach((repo, index) => {
+                    const card = document.createElement('a');
+                    card.className = 'project-card';
+                    card.href = `${SITE_BASE}/${repo.name}/`;
+                    card.target = '_blank';
+                    card.style.animationDelay = `${index * 0.05}s`; // Staggered reveal
+
                     card.innerHTML = `
-                        <div class="p-3">
-                            <h3 class="h4-text">
-                                <a href="${SITE_BASE}/${repo.name}/" class="text-bold" target="_blank">${repo.name}</a>
-                            </h3>
-                            <p class="text-small text-muted mb-3">${repo.description || 'No description provided.'}</p>
+                        <div class="card-content">
+                            <h3 class="card-title">${repo.name}</h3>
+                            <p class="card-description">${repo.description || 'No description available for this project.'}</p>
                         </div>
-                        <div class="p-3 border-top">
-                            <a href="${SITE_BASE}/${repo.name}/"
-                               class="btn btn-primary w-100"
-                               target="_blank">Visit Site</a>
+                        <div class="card-footer">
+                            <span class="visit-link">
+                                <span>VIEW_SITE</span>
+                                <span>&rarr;</span>
+                            </span>
                         </div>
                     `;
                     grid.appendChild(card);
@@ -121,14 +350,15 @@
 
                 statusArea.style.display = 'none';
                 grid.style.display = 'grid';
+                setTimeout(() => grid.classList.add('visible'), 50);
 
             } catch (error) {
                 console.error(error);
                 statusArea.innerHTML = `
-                    <div class="Box py-4 text-center">
-                        <div class="text-danger font-bold">Error Loading Directory</div>
-                        <div class="text-small">${error.message}</div>
-                        <button onclick="location.reload()" class="btn btn-sm mt-3">Retry</button>
+                    <div class="error-box">
+                        <div class="text-danger font-bold" style="color: #ff6b6b; font-weight: 700; margin-bottom: 0.5rem;">SYSTEM_ERROR</div>
+                        <div class="text-small" style="color: var(--text-muted); margin-bottom: 1rem;">${error.message}</div>
+                        <button onclick="location.reload()" class="retry-btn">Re-initialize</button>
                     </div>
                 `;
             }
