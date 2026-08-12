@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Directory - hoodedhacker32</title>
+    <!-- Primer CSS CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/@primer/css@latest/dist/primer.css">
+    <style>
+        body { background-color: #f6f8fa; }
+        .repo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem 0;
+        }
+        .repo-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+        .repo-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(140, 149, 159, 0.2);
+        }
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+        }
+    </style>
+</head>
+<body class="p-0 m-0">
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container-lg">
+            <div class="d-flex align-center py-2">
+                <svg height="32" viewBox="0 0 16 16" version="1.1" width="32" aria-hidden="true" class="mr-2">
+                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.95.10-1.61-.55-1.61-1.61 0-.44.13-.91.4-1.23-.56-.15-1.2-.54-1.2-2.38 0-1.34 1.04-2.45 2.3-2.45 .64 0 1.2.27 1.62.64.27.13.58.07 1.23.07.65 0 1.18.08 1.62.64.4.13.81.27 1.23.27 1.3 0 2.3-1.11 2.3-2.45 0-1.34-1.04-2.45-2.3-2.45-.64 0-1.2.27-1.62.64-.27.13-.58.07-1.23.07-.65 0-1.18-.08-1.62-.64-.4-.13-.81-.27-1.23-.27-1.3 0-2.3 1.11-2.3 2.45 0 1.34 1.04 2.45 2.3 2.45.64 0 1.2-.27 1.62.64.27-.13.58-.07 1.23.07.65 0 1.18.08 1.62.64.4.13.81.27 1.23.27 1.3 0 2.3-1.11 2.3-2.45 0-1.34-1.04-2.45-2.3-2.45z"></path>
+                </svg>
+                <h1 class="h3-text">hoodedhacker32 Project Directory</h1>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container-lg">
+        <div id="status-area">
+            <div class="loading-container">
+                <div class="fg-muted">Fetching active sites...</div>
+                <div class="spinner-lg mt-2"></div>
+            </div>
+        </div>
+        <div id="repo-grid" class="repo-grid" style="display: none;">
+            <!-- Dynamic Cards Inserted Here -->
+        </div>
+    </main>
+
+    <script>
+        const USERNAME = 'hoodedhacker32';
+        const API_BASE = 'https://api.github.com';
+        const SITE_BASE = `https://${USERNAME}.github.io`;
+
+        async function init() {
+            const grid = document.getElementById('repo-grid');
+            const statusArea = document.getElementById('status-area');
+
+            try {
+                // 1. Fetch all public repositories
+                const reposResponse = await fetch(`${API_BASE}/users/${USERNAME}/repos?per_page=100`);
+                if (!reposResponse.ok) throw new Error('Failed to fetch repositories');
+                const repos = await reposResponse.json();
+
+                // 2. Filter out the root directory repo to avoid self-referencing
+                const filteredRepos = repos.filter(repo => repo.name !== `${USERNAME}.github.io`);
+
+                // 3. Verify GitHub Pages status for each repo concurrently
+                const validationPromises = filteredRepos.map(async (repo) => {
+                    try {
+                        const detailResponse = await fetch(`${API_BASE}/repos/${USERNAME}/${repo.name}`);
+                        if (!detailResponse.ok) return null;
+                        const detail = await detailResponse.json();
+                        return detail.has_pages ? repo : null;
+                    } catch (e) {
+                        return null;
+                    }
+                });
+
+                const results = await Promise.all(validationPromises);
+                const activeSites = results.filter(repo => repo !== null);
+
+                if (activeSites.length === 0) {
+                    statusArea.innerHTML = '<div class="text-center py-5">No active project sites found.</div>';
+                    return;
+                }
+
+                // 4. Render Cards
+                activeSites.forEach(repo => {
+                    const card = document.createElement('div');
+                    card.className = 'Box repo-card';
+                    card.innerHTML = `
+                        <div class="p-3">
+                            <h3 class="h4-text">
+                                <a href="${SITE_BASE}/${repo.name}/" class="text-bold" target="_blank">${repo.name}</a>
+                            </h3>
+                            <p class="text-small text-muted mb-3">${repo.description || 'No description provided.'}</p>
+                        </div>
+                        <div class="p-3 border-top">
+                            <a href="${SITE_BASE}/${repo.name}/"
+                               class="btn btn-primary w-100"
+                               target="_blank">Visit Site</a>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                statusArea.style.display = 'none';
+                grid.style.display = 'grid';
+
+            } catch (error) {
+                console.error(error);
+                statusArea.innerHTML = `
+                    <div class="Box py-4 text-center">
+                        <div class="text-danger font-bold">Error Loading Directory</div>
+                        <div class="text-small">${error.message}</div>
+                        <button onclick="location.reload()" class="btn btn-sm mt-3">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
