@@ -1,369 +1,289 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>hoodedhacker32 // Project Directory</title>
-    <!-- Fonts: JetBrains Mono for the 'system' feel, Inter for the 'content' feel -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --bg-color: #0a0a0c;
-            --surface-color: #16161a;
-            --surface-hover: #1c1c22;
-            --accent-color: #5dfcf0; /* Electric Mint */
-            --accent-muted: rgba(93, 252, 240, 0.2);
-            --text-primary: #e6edf3;
-            --text-muted: #8b949e;
-            --border-color: #2d2d35;
-            --font-mono: 'JetBrains Mono', monospace;
-            --font-sans: 'Inter', sans-serif;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * { box-sizing: border-box; }
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            font-family: var(--font-sans);
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        /* --- Background Atmosphere --- */
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% -20%, #1a1a2e 0%, transparent 50%);
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        /* --- Header Section --- */
-        header {
-            padding: 4rem 2rem 2rem;
-            max-width: 1100px;
-            margin: 0 auto;
-            text-align: left;
-        }
-
-        .terminal-header {
-            font-family: var(--font-mono);
-            display: inline-block;
-            position: relative;
-        }
-
-        .prompt {
-            color: var(--accent-color);
-            font-weight: 700;
-            margin-right: 0.5rem;
-        }
-
-        .header-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            margin: 0;
-            color: var(--text-primary);
-        }
-
-        .header-subtitle {
-            font-family: var(--font-mono);
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--accent-color);
-            border-radius: 50%;
-            display: inline-block;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(1.2); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        /* --- Main Content --- */
-        main {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 0 2rem 5rem;
-        }
-
-        .repo-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1.5rem;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s ease, transform 0.6s ease;
-        }
-
-        .repo-grid.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* --- Project Cards (Bento-ish) --- */
-        .project-card {
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .project-card::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
-            transform: translateX(-100%);
-            transition: var(--transition);
-            opacity: 0;
-        }
-
-        .project-card:hover {
-            background: var(--surface-hover);
-            border-color: var(--accent-color);
-            transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 15px var(--accent-muted);
-        }
-
-        .project-card:hover::before {
-            transform: translateX(100%);
-            opacity: 1;
-            transition: transform 0.6s ease;
-        }
-
-        .card-title {
-            font-family: var(--font-mono);
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin: 0 0 0.75rem 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .card-title::before {
-            content: "/";
-            color: var(--accent-color);
-            opacity: 0.6;
-        }
-
-        .card-description {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            margin: 0 0 2rem 0;
-            min-height: 3rem;
-        }
-
-        .card-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: auto;
-        }
-
-        .visit-link {
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--accent-color);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            transition: var(--transition);
-        }
-
-        .visit-link:hover {
-            opacity: 0.8;
-            text-decoration: underline;
-        }
-
-        /* --- Loading & Error States --- */
-        .loading-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 60vh;
-            font-family: var(--font-mono);
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--border-color);
-            border-top: 3px solid var(--accent-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-top: 1rem;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .error-box {
-            background: rgba(255, 0, 0, 0.05);
-            border: 1px solid rgba(255, 0, 0, 0.2);
-            padding: 2rem;
-            border-radius: 12px;
-            text-align: center;
-            max-width: 500px;
-            margin: 0 auto;
-            font-family: var(--font-mono);
-        }
-
-        .retry-btn {
-            background: transparent;
-            border: 1px solid var(--accent-color);
-            color: var(--accent-color);
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: var(--font-mono);
-            margin-top: 1rem;
-            transition: var(--transition);
-        }
-
-        .retry-btn:hover {
-            background: var(--accent-color);
-            color: var(--bg-color);
-        }
-
-        @media (max-width: 600px) {
-            .header-title { font-size: 1.8rem; }
-            header { padding: 2rem 1rem 1rem; }
-            main { padding: 0 1rem 3rem; }
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#222a25">
+  <meta name="description" content="A directory of projects by hoodedhacker32.">
+  <title>Projects — hoodedhacker32</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Marcellus&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --ground: #2b352f;
+      --deep: #222a25;
+      --line: #56655a;
+      --line-soft: #46544a;
+      --silver: #e6ece3;
+      --silver-2: #bccab9;
+      --silver-3: #98a896;
+      --enamel: #8fcf96;
+      --enamel-hi: #a6dcab;
+      --display: 'Marcellus', 'Cormorant Garamond', Georgia, serif;
+      --ui: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      font-family: var(--ui);
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+    * { box-sizing: border-box; }
+    html { min-width: 320px; background: var(--ground); }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--silver);
+      background-color: var(--ground);
+      background-image:
+        repeating-linear-gradient(45deg, rgba(255,255,255,.014) 0 2px, transparent 2px 5px),
+        repeating-linear-gradient(-45deg, rgba(0,0,0,.04) 0 2px, transparent 2px 5px);
+    }
+    a { color: inherit; }
+    a:focus-visible { outline: 2px solid var(--enamel); outline-offset: 4px; }
+    .masthead {
+      min-height: 68px;
+      padding: 0 max(24px, calc((100vw - 1120px) / 2));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      background: var(--deep);
+      border-bottom: 1px solid var(--line-soft);
+    }
+    .wordmark {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--silver);
+      text-decoration: none;
+      font: 400 17px/1 var(--display);
+      letter-spacing: .015em;
+    }
+    .leaf { width: 21px; height: 21px; flex: none; fill: var(--enamel); }
+    .leaf-vein { fill: none; stroke: var(--deep); stroke-width: 1.4; stroke-linecap: round; }
+    .masthead-link {
+      color: var(--silver-2);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color .2s ease;
+    }
+    .masthead-link:hover { color: var(--enamel-hi); }
+    main { width: min(100% - 48px, 920px); margin: 0 auto; }
+    .intro {
+      padding: clamp(76px, 12vw, 144px) 0 54px;
+      border-bottom: 1px solid var(--line-soft);
+    }
+    .eyebrow {
+      margin: 0 0 18px;
+      color: var(--silver-3);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    h1 {
+      max-width: 13ch;
+      margin: 0;
+      font: 400 clamp(48px, 8vw, 82px)/1.04 var(--display);
+      letter-spacing: -.025em;
+      text-wrap: balance;
+    }
+    .intro-copy {
+      max-width: 54ch;
+      margin: 24px 0 0;
+      color: var(--silver-2);
+      font-size: clamp(17px, 2.2vw, 20px);
+      line-height: 1.6;
+    }
+    .directory { padding: 32px 0 96px; }
+    .directory-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .directory-head h2 { margin: 0; font: 400 22px/1.3 var(--display); }
+    .count { color: var(--silver-3); font-size: 13px; font-variant-numeric: tabular-nums; }
+    .project-list { list-style: none; margin: 0; padding: 0; }
+    .project-row { border-bottom: 1px solid var(--line-soft); }
+    .project-link {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: center;
+      padding: 24px 4px;
+      color: inherit;
+      text-decoration: none;
+      transition: background-color .2s ease, padding .2s ease;
+    }
+    .project-link:hover { padding-inline: 12px; background: rgba(255,255,255,.025); }
+    .project-index { color: var(--silver-3); font: 400 17px/1 var(--display); font-variant-numeric: tabular-nums; }
+    .project-copy { min-width: 0; }
+    .project-name { display: block; margin: 0; font: 400 clamp(20px, 3vw, 26px)/1.25 var(--display); }
+    .project-description { display: block; margin: 7px 0 0; color: var(--silver-2); font-size: 15px; line-height: 1.55; }
+    .project-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--enamel);
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .arrow { display: inline-block; transition: transform .2s ease; }
+    .project-link:hover .arrow { transform: translateX(4px); }
+    .state {
+      padding: 26px 0;
+      color: var(--silver-2);
+      font-size: 15px;
+    }
+    .state p { margin: 0; }
+    .state-link { color: var(--enamel); text-underline-offset: 3px; }
+    .state-link:hover { color: var(--enamel-hi); }
+    .spinner {
+      display: inline-block;
+      width: 13px;
+      height: 13px;
+      margin-right: 9px;
+      vertical-align: -2px;
+      border: 1px solid var(--line);
+      border-top-color: var(--enamel);
+      border-radius: 50%;
+      animation: turn .8s linear infinite;
+    }
+    @keyframes turn { to { transform: rotate(360deg); } }
+    footer {
+      padding: 22px 24px max(24px, env(safe-area-inset-bottom));
+      color: var(--silver-3);
+      background: var(--deep);
+      border-top: 1px solid var(--line-soft);
+      text-align: center;
+      font-size: 12px;
+      letter-spacing: .02em;
+    }
+    @media (max-width: 600px) {
+      .masthead { min-height: 60px; padding-inline: 20px; }
+      main { width: min(100% - 40px, 920px); }
+      .intro { padding-top: 84px; padding-bottom: 38px; }
+      .directory { padding-top: 24px; padding-bottom: 64px; }
+      .project-link { grid-template-columns: 28px minmax(0, 1fr); gap: 12px; padding: 20px 0; }
+      .project-action { grid-column: 2; margin-top: -4px; }
+      .project-link:hover { padding-inline: 6px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
 </head>
 <body>
+  <header class="masthead">
+    <a class="wordmark" href="https://github.com/hoodedhacker32" aria-label="hoodedhacker32 on GitHub">
+      <svg class="leaf" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 20.5C3.5 9.1 10.1 3.5 20.5 3.5c0 10.4-5.6 17-17 17z"/><path class="leaf-vein" d="M5 19 17.5 6.5"/></svg>
+      <span>hoodedhacker32</span>
+    </a>
+    <a class="masthead-link" href="https://github.com/hoodedhacker32">GitHub <span aria-hidden="true">↗</span></a>
+  </header>
 
-    <header>
-        <div class="terminal-header">
-            <h1 class="header-title"><span class="prompt">$</span> hoodedhacker32</h1>
-            <div class="header-subtitle">
-                <span class="status-dot"></span>
-                <span>root@directory:~/active_projects</span>
-            </div>
-        </div>
-    </header>
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <p class="eyebrow">hoodedhacker32 · GitHub Pages</p>
+      <h1 id="page-title">Project directory</h1>
+      <p class="intro-copy">A quick path to the project sites I’ve been building.</p>
+    </section>
 
-    <main>
-        <div id="status-area">
-            <div class="loading-container">
-                <div class="fg-muted" style="color: var(--text-muted); font-family: var(--font-mono);">Scanning for active deployments...</div>
-                <div class="spinner"></div>
-            </div>
-        </div>
-        <div id="repo-grid" class="repo-grid" style="display: none;">
-            <!-- Dynamic Cards Inserted Here -->
-        </div>
-    </main>
+    <section class="directory" aria-labelledby="projects-title">
+      <div class="directory-head">
+        <h2 id="projects-title">Project sites</h2>
+        <span class="count" id="project-count" aria-live="polite"></span>
+      </div>
+      <div class="state" id="project-state" role="status" aria-live="polite"><p><span class="spinner" aria-hidden="true"></span>Finding the project sites…</p></div>
+      <ol class="project-list" id="project-list" hidden></ol>
+    </section>
+  </main>
 
-    <script>
-        const USERNAME = 'hoodedhacker32';
-        const API_BASE = 'https://api.github.com';
-        const SITE_BASE = `https://${USERNAME}.github.io`;
+  <footer>Made by hoodedhacker32 · Project pages hosted on GitHub</footer>
 
-        async function init() {
-            const grid = document.getElementById('repo-grid');
-            const statusArea = document.getElementById('status-area');
+  <script>
+    const USERNAME = 'hoodedhacker32';
+    const SITE_BASE = `https://${USERNAME}.github.io`;
+    const list = document.getElementById('project-list');
+    const state = document.getElementById('project-state');
+    const count = document.getElementById('project-count');
 
-            try {
-                const reposResponse = await fetch(`${API_BASE}/users/${USERNAME}/repos?per_page=100`);
-                if (!reposResponse.ok) throw new Error('Failed to fetch repositories');
-                const repos = await reposResponse.json();
+    function showMessage(message, linkLabel, href) {
+      state.replaceChildren();
+      const p = document.createElement('p');
+      p.append(document.createTextNode(message));
+      if (linkLabel && href) {
+        p.append(document.createTextNode(' '));
+        const link = document.createElement('a');
+        link.className = 'state-link';
+        link.href = href;
+        link.textContent = linkLabel;
+        p.append(link);
+      }
+      state.append(p);
+    }
 
-                const filteredRepos = repos.filter(repo => repo.name !== `${USERNAME}.github.io`);
+    function addProject(repo, index) {
+      const item = document.createElement('li');
+      item.className = 'project-row';
+      const link = document.createElement('a');
+      link.className = 'project-link';
+      link.href = `${SITE_BASE}/${encodeURIComponent(repo.name)}/`;
+      const number = document.createElement('span');
+      number.className = 'project-index';
+      number.setAttribute('aria-hidden', 'true');
+      number.textContent = String(index + 1).padStart(2, '0');
+      const copy = document.createElement('span');
+      copy.className = 'project-copy';
+      const title = document.createElement('h3');
+      title.className = 'project-name';
+      title.textContent = repo.name;
+      const description = document.createElement('p');
+      description.className = 'project-description';
+      description.textContent = repo.description || 'A project by hoodedhacker32.';
+      copy.append(title, description);
+      const action = document.createElement('span');
+      action.className = 'project-action';
+      action.append(document.createTextNode('Visit site'));
+      const arrow = document.createElement('span');
+      arrow.className = 'arrow';
+      arrow.setAttribute('aria-hidden', 'true');
+      arrow.textContent = '→';
+      action.append(arrow);
+      link.append(number, copy, action);
+      item.append(link);
+      list.append(item);
+    }
 
-                const validationPromises = filteredRepos.map(async (repo) => {
-                    try {
-                        const detailResponse = await fetch(`${API_BASE}/repos/${USERNAME}/${repo.name}`);
-                        if (!detailResponse.ok) return null;
-                        const detail = await detailResponse.json();
-                        return detail.has_pages ? repo : null;
-                    } catch (e) {
-                        return null;
-                    }
-                });
-
-                const results = await Promise.all(validationPromises);
-                const activeSites = results.filter(repo => repo !== null);
-
-                if (activeSites.length === 0) {
-                    statusArea.innerHTML = '<div class="text-center py-5" style="color: var(--text-muted); font-family: var(--font-mono);">No active project sites found.</div>';
-                    return;
-                }
-
-                activeSites.forEach((repo, index) => {
-                    const card = document.createElement('a');
-                    card.className = 'project-card';
-                    card.href = `${SITE_BASE}/${repo.name}/`;
-                    card.style.animationDelay = `${index * 0.05}s`; // Staggered reveal
-
-                    card.innerHTML = `
-                        <div class="card-content">
-                            <h3 class="card-title">${repo.name}</h3>
-                            <p class="card-description">${repo.description || 'No description available for this project.'}</p>
-                        </div>
-                        <div class="card-footer">
-                            <span class="visit-link">
-                                <span>VIEW_SITE</span>
-                                <span>&rarr;</span>
-                            </span>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
-
-                statusArea.style.display = 'none';
-                grid.style.display = 'grid';
-                setTimeout(() => grid.classList.add('visible'), 50);
-
-            } catch (error) {
-                console.error(error);
-                statusArea.innerHTML = `
-                    <div class="error-box">
-                        <div class="text-danger font-bold" style="color: #ff6b6b; font-weight: 700; margin-bottom: 0.5rem;">SYSTEM_ERROR</div>
-                        <div class="text-small" style="color: var(--text-muted); margin-bottom: 1rem;">${error.message}</div>
-                        <button onclick="location.reload()" class="retry-btn">Re-initialize</button>
-                    </div>
-                `;
-            }
+    async function loadProjects() {
+      try {
+        const response = await fetch(`https://api.github.com/users/${USERNAME}/repos?per_page=100&sort=updated`, {
+          headers: { Accept: 'application/vnd.github+json' }
+        });
+        if (!response.ok) throw new Error(`GitHub returned ${response.status}`);
+        const repos = await response.json();
+        const projects = repos.filter(repo => repo.name !== `${USERNAME}.github.io` && repo.has_pages);
+        if (!projects.length) {
+          count.textContent = '0 sites';
+          showMessage('No project sites are published right now.', 'Browse all repositories on GitHub', `https://github.com/${USERNAME}?tab=repositories`);
+          return;
         }
+        projects.forEach(addProject);
+        count.textContent = `${projects.length} ${projects.length === 1 ? 'site' : 'sites'}`;
+        list.hidden = false;
+        state.hidden = true;
+      } catch (error) {
+        console.error('Could not load project sites:', error);
+        showMessage('The project list could not load.', 'Browse repositories on GitHub', `https://github.com/${USERNAME}?tab=repositories`);
+      }
+    }
 
-        window.addEventListener('DOMContentLoaded', init);
-    </script>
+    loadProjects();
+  </script>
 </body>
 </html>
